@@ -8,6 +8,8 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,11 +22,27 @@ public class ExtendedClass implements Externalizable {
 
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
-
+        out.writeObject(firstName);
+        out.writeObject(lastName);
+        out.writeObject(encrypt(password));
     }
 
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-
+        firstName = (String) in.readObject();
+        lastName = (String) in.readObject();
+        password = decrypt((String) in.readObject());
     }
+
+    private String encrypt(String data){
+        var encryptedData = Base64.getEncoder().encodeToString(data.getBytes(StandardCharsets.UTF_8));
+        return encryptedData;
+    }
+    private String decrypt(String data){
+        var decryptedData = new String(Base64.getDecoder().decode(data));
+        System.out.println(decryptedData);
+        return decryptedData;
+    }
+
+    
 }
